@@ -61,6 +61,6 @@ class ConstructPrompt:
             parameters = [f"{k} type {v["type"]}" for k,v in function_data.parameters.items()]
             prompt += f"\n{name} : {description} parameters {" ".join(parameters)}"
         prompt += f"\nPreduce a json format from these information following this format :\n[{json_output_format}]"
-        prompt += '\nOutput schema format: [\n{"prompt": "User prompt",\n"name": "function_name",\n"parameters": {"param_name": value}\n}\n]'
-
+        prompt += '\nOutput schema format: [\n{"prompt": "<write the user prompt here>",\n"name": "<write function name used to solve the prompt>",\n"parameters": {"param_name": value}\n}\n]'
+        prompt += '\nDo that for all prompts from start to the and of useres prompts as describe above.'
         return prompt
