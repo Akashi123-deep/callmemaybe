@@ -50,7 +50,7 @@ class ParseArguments(BaseModel):
             return True
         return False
 
-    def is_valid_arguments(self) -> bool:
+    def is_valid_arguments(self) -> None:
         if len(self.arguments) > 3:
             print("Too many arguments. Please provide valid arguments structure:  [--functions_definition <function_definition_file>] [--input <input_file>] [--"
             "output <output_file>]")

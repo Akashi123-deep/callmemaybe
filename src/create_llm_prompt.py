@@ -1,14 +1,18 @@
-import json
+import re
 from  .function_definition import FunctionDefinitionObj
-from pydantic import TypeAdapter, ValidationError
+from pydantic import TypeAdapter, ValidationError, ConfigDict, BaseModel
+
+class PromptItem(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    prompt: str
 
 class ConstructPrompt:
     @staticmethod
-    def __get_json_input(input_json: str = "data/input/function_calling_tests.json") -> list[dict[str, str]]:
+    def __get_json_input(input_json_file: str = "data/input/function_calling_tests.json") -> list[PromptItem]:
         try:
-            with open(input_json, "r") as input_json:
+            with open(input_json_file, "r") as input_json:
                 json = input_json.read()
-            adapter = TypeAdapter(list[dict[str, str]])
+            adapter = TypeAdapter(list[PromptItem])
             return adapter.validate_json(json)
         except FileNotFoundError:
             print("File does not exist.")
@@ -19,6 +23,7 @@ class ConstructPrompt:
         except ValidationError as e:
             for error in e.errors():
                 print(error["msg"])
+            exit()
         except Exception as e:
             print(e)
             exit()
@@ -39,6 +44,7 @@ class ConstructPrompt:
         except ValidationError as e:
             for error in e.errors():
                 print(error["msg"])
+            exit()
         except Exception as e:
             print(e)
             exit()
@@ -46,7 +52,7 @@ class ConstructPrompt:
     def injected_prompt(self) -> str:
         prompt = ""
         for prompt_data in self.__get_json_input():
-            prompt += f"The user prompt: {prompt_data['prompt']}\n"
+            prompt += f"The user prompt: {prompt_data.prompt}\n"
         prompt += "\nAvailable functions:\n"
         for function_data in self.__get_json_definition():
             name = function_data.name
