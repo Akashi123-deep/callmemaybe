@@ -10,16 +10,21 @@ def main() -> None:
     arg = ParseArguments(arguments= sys.argv[1:])
     prompt = ConstructPrompt()
     injected_prompt = prompt.injected_prompt()
-    generate_tokens = LlmResponse(llm= llm, prompt = injected_prompt, ids = [])
+    json_validation = ConstrainedDeconding()
+    generate_tokens = LlmResponse(llm= llm, prompt = injected_prompt, ids = [], validation=json_validation)
     args = arg.process_arguments()
-    print(prompt.injected_prompt())
     while True:
         print(generate_tokens.get_next_token(), end="")
-    # json_validation = ConstrainedDeconding()
-    # print(json_validation.still_valid_structure(''))
+        if generate_tokens.stop_flag == 1:
+            break
     
     
     
 
 if __name__ == "__main__":
-    main()
+    try:
+        main()
+    except KeyboardInterrupt:
+        print("\nprogram has been killed.")
+    except Exception as e:
+        print(e)
