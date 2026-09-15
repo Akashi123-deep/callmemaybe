@@ -49,16 +49,28 @@ class ConstructPrompt:
             print(e)
             exit()
 
+    def get_user_prompts(self) -> list[str]:
+        user_prompts = []
+        for input_json in self.__get_json_input():
+            user_prompts.append(input_json.prompt)
+        return user_prompts
+
+    def get_function_definition(self) -> list[str]:
+        functions_definition = []
+        for fun_d in self.__get_json_definition():
+            functions_definition.append(fun_d.name)
+        return functions_definition
+
     def injected_prompt(self) -> str:
-        prompt = ""
-        for prompt_data in self.__get_json_input():
-            prompt += f"The user prompt: {prompt_data.prompt}\n"
-        prompt += "\nAvailable functions:\n"
-        for function_data in self.__get_json_definition():
-            name = function_data.name
-            description = function_data.description
-            parameters = [f"{k} type {v['type']}" for k, v in function_data.parameters.items()]
-            prompt += f"\n{name} : {description} parameters {' '.join(parameters)}"
-        prompt += '\n\nOutput schema format:\n[\n{\n"prompt": "<write the actual user prompt here>",\n"name": "<function name used to solve use prompt>",\n"parameters": {"param_name": value}\n}\n]'
-        prompt += "For all prompt above."
+        prompt = """\nReturn ONLY a JSON. No explanation, no markdown fences, no text before or after it.
+Each object: {"prompt": "<exact input text>", "name": "<function name>", "parameters": {<The function parametr name>: <passed value>}}\n"""
+        prompt += """Example: 
+What is the sum of 7 and 1?
+Output:
+{"prompt": "What is the sum of 7 and 1?", "name": "fn_add_numbers", "parameters": {"a": 7, "b": 1}}"""
+        prompt += "\nAvailiable functions:\n\n"
+        for data_definition in self.__get_json_definition():
+            parameters = [f"{k}: {v["type"]}" for k,v in data_definition.parameters.items()]
+            prompt += f"{data_definition.name}({", ".join(parameters)}): {data_definition.description}\n"
+        
         return prompt
