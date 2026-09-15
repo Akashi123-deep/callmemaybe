@@ -67,10 +67,10 @@ Each object: {"prompt": "<exact input text>", "name": "<function name>", "parame
         prompt += """Example: 
 What is the sum of 7 and 1?
 Output:
-{"prompt": "What is the sum of 7 and 1?", "name": "fn_add_numbers", "parameters": {"a": 7, "b": 1}}"""
+{"prompt": "What is the sum of 7 and 1?", "name": "fn_add_numbers", "parameters": {"a": 7.0, "b": 1.0}}"""
         prompt += "\nAvailiable functions:\n\n"
         for data_definition in self.__get_json_definition():
             parameters = [f"{k}: {v["type"]}" for k,v in data_definition.parameters.items()]
             prompt += f"{data_definition.name}({", ".join(parameters)}): {data_definition.description}\n"
-        
+        prompt += """If replecemnts is asked provide the correct regex"""
         return prompt
