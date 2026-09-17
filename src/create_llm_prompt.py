@@ -1,16 +1,19 @@
-import re
-from  .function_definition import FunctionDefinitionObj
+from .function_definition import FunctionDefinitionObj
 from pydantic import TypeAdapter, ValidationError, ConfigDict, BaseModel
+
 
 class PromptItem(BaseModel):
     model_config = ConfigDict(extra="forbid")
     prompt: str
 
-class ConstructPrompt:
-    @staticmethod
-    def __get_json_input(input_json_file: str = "data/input/function_calling_tests.json") -> list[PromptItem]:
+
+class ConstructPrompt(BaseModel):
+    input_json_def: str = "data/input/functions_definition.json"
+    input_json_file: str = "data/input/function_calling_tests.json"
+
+    def __get_json_input(self) -> list[PromptItem]:
         try:
-            with open(input_json_file, "r") as input_json:
+            with open(self.input_json_file, "r") as input_json:
                 json = input_json.read()
             adapter = TypeAdapter(list[PromptItem])
             return adapter.validate_json(json)
@@ -28,10 +31,9 @@ class ConstructPrompt:
             print(e)
             exit()
 
-    @staticmethod
-    def __get_json_definition(input_json_definition: str = "data/input/functions_definition.json") -> list[FunctionDefinitionObj]:
+    def __get_json_definition(self) -> list[FunctionDefinitionObj]:
         try:
-            with open(input_json_definition, "r") as input_json:
+            with open(self.input_json_def, "r") as input_json:
                 json = input_json.read()
             adapter = TypeAdapter(list[FunctionDefinitionObj])
             return adapter.validate_json(json)
@@ -62,15 +64,28 @@ class ConstructPrompt:
         return functions_definition
 
     def injected_prompt(self) -> str:
-        prompt = """\nReturn ONLY a JSON. No explanation, no markdown fences, no text before or after it.
-Each object: {"prompt": "<exact input text>", "name": "<function name>", "parameters": {<The function parametr name>: <passed value>}}\n"""
-        prompt += """Example: 
-What is the sum of 7 and 1?
-Output:
-{"prompt": "What is the sum of 7 and 1?", "name": "fn_add_numbers", "parameters": {"a": 7.0, "b": 1.0}}"""
+        prompt = (
+            "\nReturn ONLY a JSON. No explanation, "
+            "no markdown fences, no text before or after it.\n"
+            'Each object: {"prompt": "<exact input text>"'
+            ', "name": "<function name>", '
+            '"para": {<The function parametr name>: <passed value>}}\n'
+        )
+        prompt += (
+            "Example:\n"
+            "What is the sum of 7 and 1?\n"
+            "Output:\n"
+            '{"prompt": "What is the sum of 7 and 1?"'
+            ', "name": "fn_add_numbers", '
+            '"para": {"a": 7.0, "b": 1.0}'
+            "}"
+        )
         prompt += "\nAvailiable functions:\n\n"
-        for data_definition in self.__get_json_definition():
-            parameters = [f"{k}: {v["type"]}" for k,v in data_definition.parameters.items()]
-            prompt += f"{data_definition.name}({", ".join(parameters)}): {data_definition.description}\n"
+        for d_f in self.__get_json_definition():
+            para = [
+                f"{k}: {v["type"]}"
+                for k, v in d_f.parameters.items()
+                ]
+            prompt += f"{d_f.name}({", ".join(para)}): {d_f.description}\n"
         prompt += """If replecemnts is asked provide the correct regex"""
         return prompt

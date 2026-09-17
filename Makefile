@@ -4,3 +4,6 @@ SRC = python -m src
 
 run: 
 	@$(UV) $(SRC)
+
+clean:
+	rm -rf 

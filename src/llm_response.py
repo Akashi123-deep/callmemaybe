@@ -1,12 +1,12 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List, Any
 
+
 class LlmResponse(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True)
-    
     prompt: str
-    llm: Any  
-    validation: Any  
+    llm: Any
+    validation: Any
     ids: List[int] = []
     _prompt_len: int = 0
     stop_flag: int = 0
