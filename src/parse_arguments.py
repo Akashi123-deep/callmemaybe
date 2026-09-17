@@ -74,7 +74,7 @@ class ParseArguments(BaseModel):
 
     def process_arguments(self) -> dict[str, str]:
         self.__update_the_arguments()
-        files = dict()
+        files: dict[str, str] = {}
         if not self.arguments:
             return files
         self.is_valid_arguments()

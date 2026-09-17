@@ -8,7 +8,7 @@ class ConstrainedDeconding(BaseModel):
     def still_valid_structure(self, text: str) -> str:
         must_include = "|".join(self.funs_names)
         pattern = (
-            r'\n"name":\s*'
+            r'"name":\s*'
             r'"(?:' + must_include + r')"'
             r',\n"parameters":\s*\{\s*'
             r'(?:"[a-zA-Z][a-zA-Z0-9_]*":\s*(?:-?[0-9]+(?:\.[0-9]*)?|"[^"]*")'

@@ -31,8 +31,8 @@ class LlmResponse(BaseModel):
                 logits[token_id] = float('-inf')
             elif self.validation.still_valid_structure(full_text) == "Full.":
                 self.stop_flag = 1
-                return self.llm.decode([token_id]) + "\n"
+                return str(self.llm.decode([token_id]) + "\n")
             else:
                 self.ids.append(token_id)
                 token_str = self.llm.decode([token_id])
-                return token_str
+                return str(token_str)

@@ -1,5 +1,6 @@
 from .function_definition import FunctionDefinitionObj
 from pydantic import TypeAdapter, ValidationError, ConfigDict, BaseModel
+from typing import cast
 
 
 class PromptItem(BaseModel):
@@ -16,7 +17,8 @@ class ConstructPrompt(BaseModel):
             with open(self.input_json_file, "r") as input_json:
                 json = input_json.read()
             adapter = TypeAdapter(list[PromptItem])
-            return adapter.validate_json(json)
+            result = adapter.validate_json(json)
+            return cast(list[PromptItem], result)
         except FileNotFoundError:
             print("File does not exist.")
             exit()
@@ -36,7 +38,8 @@ class ConstructPrompt(BaseModel):
             with open(self.input_json_def, "r") as input_json:
                 json = input_json.read()
             adapter = TypeAdapter(list[FunctionDefinitionObj])
-            return adapter.validate_json(json)
+            result = adapter.validate_json(json)
+            return cast(list[FunctionDefinitionObj], result)
         except FileNotFoundError:
             print("File does not exist.")
             exit()
@@ -69,7 +72,7 @@ class ConstructPrompt(BaseModel):
             "no markdown fences, no text before or after it.\n"
             'Each object: {"prompt": "<exact input text>"'
             ', "name": "<function name>", '
-            '"para": {<The function parametr name>: <passed value>}}\n'
+            '"parameters": {<The function parametr name>: <passed value>}}\n'
         )
         prompt += (
             "Example:\n"
@@ -77,8 +80,11 @@ class ConstructPrompt(BaseModel):
             "Output:\n"
             '{"prompt": "What is the sum of 7 and 1?"'
             ', "name": "fn_add_numbers", '
-            '"para": {"a": 7.0, "b": 1.0}'
+            '"parameters": {"a": 7.0, "b": 1.0}'
             "}"
+            "\nif the type is number you must "
+            "write the parametrs in floating format"
+            "and normal format if parameter type is integer"
         )
         prompt += "\nAvailiable functions:\n\n"
         for d_f in self.__get_json_definition():
@@ -87,5 +93,4 @@ class ConstructPrompt(BaseModel):
                 for k, v in d_f.parameters.items()
                 ]
             prompt += f"{d_f.name}({", ".join(para)}): {d_f.description}\n"
-        prompt += """If replecemnts is asked provide the correct regex"""
         return prompt
