@@ -58,4 +58,39 @@ LLM Hallucination: Even though the algorithm forces the AI to follow the exact J
 
 Complex Regex Syntax: Writing a partial regular expression that can handle every possible stage of an unfinished sentence—like open brackets, optional parameters, and quotes—is very difficult and easy to get wrong.
 
-Slow and Unreliable Hardware: running and testing on CPU make way too slow 
+Slow and Unreliable Hardware: running and testing on CPU make way too slow
+## Example usage:
+input_json:
+[
+  {
+    "prompt": "What is the sum of 2 and 3?"
+  }
+]
+
+function_definition_json:
+[
+  {
+    "name": "fn_add_numbers",
+    "description": "Add two numbers together and return their sum.",
+    "parameters": {
+      "a": {
+        "type": "number"
+      },
+      "b": {
+        "type": "number"
+      }
+    },
+    "returns": {
+      "type": "number"
+    }
+  }
+]
+
+output_json :
+[
+{
+"prompt":"What is the sum of 2 and 3?",
+"name":"fn_add_numbers",
+"parameters":{"a":2.0,"b":3.0}
+}
+]
