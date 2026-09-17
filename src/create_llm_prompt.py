@@ -93,4 +93,10 @@ class ConstructPrompt(BaseModel):
                 for k, v in d_f.parameters.items()
                 ]
             prompt += f"{d_f.name}({", ".join(para)}): {d_f.description}\n"
+        prompt += (
+            "You are an expert in Regular "
+            "Expressions (Regex). Your task is to generate a "
+            "precise, valid regex pattern based on "
+            "the user's natural language request."
+        )
         return prompt
