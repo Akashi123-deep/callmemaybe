@@ -11,6 +11,8 @@ dependencies = [
     "flake8>=7.3.0",
     "mypy>=2.3.1",
     "json-repair>=0.63.4",
+    "accelerate>=1.15.0",
+    "termcolor>=3.3.0",
 ]
 
 [tool.uv.workspace]

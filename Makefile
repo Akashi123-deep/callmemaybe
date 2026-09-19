@@ -15,3 +15,4 @@ lint:
 	@$(UV) flake8 src && $(UV) mypy src $(MYPYFLAGS)
 
 clean:
+	@find . -type d \( -name "__pycache__" -o -name ".mypy_cache" \) -exec rm -r {} +

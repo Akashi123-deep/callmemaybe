@@ -1,35 +1,38 @@
-*This project has been created as part of the 42 curriculum by mel-yazi*
+*This project has been created as part of the 42 curriculum by mel-yazi.*
 
 # Description :
 Call Me Maybe is an introduction to how AI can use computer functions. Normally, Large Language Models (LLMs) only talk in human text. This project turns everyday human questions into exact, computer-ready code.
 
 Small AI models often make mistakes when trying to write code or JSON. To fix this, our project uses a trick called constrained decoding. Instead of guessing and hoping the AI gets it right, our program checks every single piece (token) the AI writes. This guarantees that the final output is always 100% correct and matches what the functions need.
 
-# Instructions:
+# Instructions
 
-## Installation
-Clone the project and install all required tools and packages using the Makefile:
-** make install **
-## Execution
-Run the main program using the default settings:
-** make run **
+#### Installation
+Clone the project and install all required tools and packages using the Makefile: 
+`make install ` \
+Run the main program using the default settings: \
+` make run `
 
-You can also run it with custom files by typing:
-** uv run python -m src \
-  --functions_definition data/input/functions_definition.json \
-  --input data/input/function_calling_tests.json \
-  --output data/output/function_calling_results.json **
+You can also run it with custom files by typing: \
+`uv run python -m src 
+  --functions_definition <path>
+  --input <path>
+  --output <path>
+`
 
 ## Checking Code Quality
-To check your code for errors using linters and type checkers:
-** make lint **
+To check your code for errors using linters and type checkers: \
+`make lint`
 
-clean up temporary cache folders:
-** make clean **
+clean up temporary cache folders: \
+`make clean`
 
 # Rsources:
-LLMs from Scratch – Practical Engineering from Base Model to PPO RLHF: https://youtu.be/p3sij8QzONQ?si=-UicV9-8hb8djFdA
-uv documentation : https://docs.astral.sh/uv/reference/cli/
+LLMs from Scratch – Practical Engineering from Base Model to PPO RLHF: 
+
+**[https://youtu.be/p3sij8QzONQ?si=-UicV9-8hb8djFdA]** \
+uv documentation : \
+**[https://docs.astral.sh/uv/reference/cli/]**
 
 ## Algorithm explanation:
 Step-by-Step How It Works
@@ -46,51 +49,66 @@ The Checker's Three Rules:
 "So far yes.": If the choice is looking good and the sentence is still being built correctly, the code keeps it and moves on to the next word.
 
 "Full.": If the response is completely finished and correct, the code stops the AI from writing anymore.
-## Design decisions:
-Pydantic for Data Management: Both the response handler and validator use Pydantic (BaseModel) to keep track of variables like token lists, prompt lengths, and stop flags in a clean, organized way.
+## Design decision
+#### Pydantic for Data Management:
+Both the response handler and validator use Pydantic (BaseModel) to keep track of variables like token lists, prompt lengths, and stop flags in a clean, organized way.
 
-Smart Partial Regex Checking: Instead of Python's basic regex, it uses a special third-party regex library with a partial=True setting. Because AI writes text piece by piece, the text is almost always unfinished. This partial tool allows the code to look at incomplete text and check if the format still valid
-## Performance analysis:
+#### Smart Partial Regex Checking: 
+Instead of Python's basic regex, it uses a special third-party regex library with a partial=True setting. Because AI writes text piece by piece, the text is almost always unfinished. This partial tool allows the code to look at incomplete text and check if the format still valid
+## Performance analysis
 This code is very accurate because it blocks wrong words before they happen, meaning the final JSON format will always be correct, even though the AI might still write a silly number inside it. However, it is quite slow because running a text checker on every single word creates a lot of computer lag compared to professional tools. It is very reliable at keeping the AI on track without letting it chat or mess up.
 
-## Challenges faced:
+## Challenges faced
 LLM Hallucination: Even though the algorithm forces the AI to follow the exact JSON layout, it cannot control what the AI thinks. The model might still make up wrong information or incorrect values inside the valid structure.
 
-Complex Regex Syntax: Writing a partial regular expression that can handle every possible stage of an unfinished sentence—like open brackets, optional parameters, and quotes—is very difficult and easy to get wrong.
+Complex Regex Syntax: Writing a partial regular expression that can handle every possible stage of an unfinished sentence like open brackets, optional parameters, and quotes is very difficult and easy to get wrong.
 
 Slow and Unreliable Hardware: running and testing on CPU make way too slow
-## Example usage:
+
+## Testing strategy
+I tested the implementation with the provided data and verified that all outputs match the defined requirements, In addtion to human feedback.
+
+## Example usage
 input_json:
+``` json
 [
   {
     "prompt": "What is the sum of 2 and 3?"
   }
 ]
-
+```
 function_definition_json:
+``` json
 [
   {
     "name": "fn_add_numbers",
     "description": "Add two numbers together and return their sum.",
     "parameters": {
-      "a": {
+      "a": { 
         "type": "number"
       },
-      "b": {
+      "b": { 
         "type": "number"
       }
-    },
+    }, 
     "returns": {
       "type": "number"
     }
   }
 ]
-
+```
+`make run ` \
+In this stage the llm will generate the json output format (may be slow depend on the hardware ) \
 output_json :
+``` json
 [
-{
-"prompt":"What is the sum of 2 and 3?",
-"name":"fn_add_numbers",
-"parameters":{"a":2.0,"b":3.0}
-}
+  {
+    "prompt": "What is the sum of 2 and 3?",
+    "name": "fn_add_numbers",
+    "parameters": {
+        "a": 2.0,
+        "b": 3.0
+    }
+  }
 ]
+```
