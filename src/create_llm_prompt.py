@@ -5,7 +5,7 @@ from typing import cast, Annotated
 
 class PromptItem(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    prompt: str
+    prompt: str = Field(min_length=1)
 
 
 class ConstructPrompt(BaseModel):
@@ -59,6 +59,10 @@ class ConstructPrompt(BaseModel):
         except PermissionError:
             print("Please grant the read premission to the input file.")
             exit()
+        except ValueError as e:
+            for error in e.errors():
+                print(error['msg'][13:])
+            exit()
         except ValidationError as e:
             for error in e.errors():
                 print(error["msg"])
@@ -78,6 +82,16 @@ class ConstructPrompt(BaseModel):
         for fun_d in self.__get_json_definition():
             functions_definition.append(fun_d.name)
         return functions_definition
+
+    def get_fun_para(self, fun_name: str) -> dict[str, str]:
+        taget_para = {}
+        temp = {}
+        for fun_def in self.__get_json_definition():
+            if fun_name == fun_def.name:
+                temp = fun_def.parameters
+        for k, v in temp.items():
+            taget_para[k] = temp[k]['type']
+        return taget_para
 
     def injected_prompt(self) -> str:
         prompt = (

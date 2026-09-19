@@ -28,7 +28,7 @@ def main() -> None:
     llm_result = ""
     full_json = []
     fun_names = prompt.get_function_definition()
-    json_validation = ConstrainedDeconding(funs_names=fun_names)
+    json_validation = ConstrainedDeconding(funs_names=fun_names, prompt=prompt)
     i = 0
     for user_prompt in user_prompts:
         os.system("clear")
