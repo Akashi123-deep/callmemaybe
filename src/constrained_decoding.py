@@ -9,16 +9,17 @@ class ConstrainedDeconding(BaseModel):
     prompt: ConstructPrompt
 
     def build_regex_pattern(self, fun_params: dict[str, str]) -> str:
-        pattern = ''
         type_check = {
             "number": r"-?(?:0|[1-9]\d*)\.\d+",
-            "integer": r"-?(?:0|\d+)",
+            "integer": r"-?(?:0|[1-9]\d*)",
             "boolean": r"(?:true|false)",
-            "string": r'"(?:[^"\\]\\.)*"'
+            "string": r'"(?:[^"\\]|\\.)*"'
         }
-        for k, v in fun_params.items():
-            pattern += f'"{k}":{type_check[v]},'
-        return pattern[:-1]
+        parameters = [
+            f'"{key}"\\s*:\\s*{type_check[value]}'
+            for key, value in fun_params.items()
+        ]
+        return r',\s*'.join(parameters)
 
     def still_valid_structure(self, text: str) -> str:
         must_include = "|".join(self.funs_names)
@@ -35,9 +36,11 @@ class ConstrainedDeconding(BaseModel):
         else:
             param_regex = r'.*'
         pattern = (
-            r'"name":\s*'
+            r'"name"\s*:\s*'
             r'"(?:' + must_include + r')"'
-            r',\n"parameters":' + r'{' + param_regex + r'}'
+            r'\s*,\s*\n'
+            r'"parameters"\s*:\s*' + r'{' + param_regex + r'}'
+            r'\s*\n}\n'
             )
         valid_json = regex.fullmatch(
             pattern=pattern, string=text, partial=True)

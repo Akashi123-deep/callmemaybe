@@ -8,7 +8,6 @@ from .write_output import WriteOutputFile
 from termcolor import colored
 import os
 
-
 def main() -> None:
     llm = Small_LLM_Model()
     arg = ParseArguments(arguments=sys.argv[1:])
@@ -32,7 +31,7 @@ def main() -> None:
     i = 0
     for user_prompt in user_prompts:
         os.system("clear")
-        user_prompt = user_prompt.replace('"', "'")
+        user_prompt = user_prompt.replace("\"", "\\\"")
         print(colored(f"processed prompts: {i}/{len(user_prompts)}", "cyan"))
         print(colored("Available functions:\n", "yellow",
                       "on_light_green"))
@@ -55,7 +54,6 @@ def main() -> None:
             print(colored(next_token, "blue"), end="")
             if generate_tokens.stop_flag == 1:
                 full_json.append(llm_result)
-                os.system("clear")
                 break
     write_output = WriteOutputFile(output_list=full_json)
     output_arg = args.get("output_file")
