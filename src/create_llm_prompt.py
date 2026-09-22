@@ -59,10 +59,6 @@ class ConstructPrompt(BaseModel):
         except PermissionError:
             print("Please grant the read premission to the input file.")
             exit()
-        except ValueError as e:
-            for error in e.errors():
-                print(error['msg'][13:])
-            exit()
         except ValidationError as e:
             for error in e.errors():
                 print(error["msg"])

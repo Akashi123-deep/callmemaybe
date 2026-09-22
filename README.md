@@ -8,7 +8,7 @@ Small AI models often make mistakes when trying to write code or JSON. To fix th
 # Instructions
 
 #### Installation
-Clone the project and install all required tools and packages using the Makefile: 
+Clone the project and install all required tools and packages using the Makefile: \
 `make install ` \
 Run the main program using the default settings: \
 ` make run `

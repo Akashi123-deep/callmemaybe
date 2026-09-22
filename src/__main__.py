@@ -8,6 +8,7 @@ from .write_output import WriteOutputFile
 from termcolor import colored
 import os
 
+
 def main() -> None:
     llm = Small_LLM_Model()
     arg = ParseArguments(arguments=sys.argv[1:])
